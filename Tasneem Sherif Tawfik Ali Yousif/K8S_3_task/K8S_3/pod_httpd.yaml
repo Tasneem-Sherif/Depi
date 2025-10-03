@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: monitoring-agent
+  labels:
+    app: monitoring
+spec:
+  containers:
+  - name: httpd
+    image: httpd:latest
+    ports:
+    - containerPort: 80
+  tolerations:
+  - key: "key1"
+    operator: "Equal"
+    value: "value1"
+    effect: "NoSchedule"

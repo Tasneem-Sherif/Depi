@@ -1,0 +1,64 @@
+- name: Ansible Basic Setup
+  hosts: target
+  become: true
+  vars:
+    config_dir: /etc/demo_config
+    config_file: config
+    config_message: "Hello from control machine"
+    packages:
+      - curl
+      - htop
+      - git
+
+  tasks:
+
+    - name: Check total memory
+      ansible.builtin.set_fact:
+        mem_mb: "{{ ansible_memtotal_mb }}"
+
+    - name: Install Apache on Debian
+      apt:
+        name: apache2
+        state: present
+        update_cache: true
+      when: ansible_os_family == "Debian" and mem_mb >= 512
+
+    - name: Install Apache on RedHat
+      yum:
+        name: httpd
+        state: present
+      when: ansible_os_family == "RedHat" and mem_mb >= 512
+
+    - name: Create config directory
+      file:
+        path: "{{ config_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create config file
+      copy:
+        dest: "{{ config_dir }}/{{ config_file }}"
+        content: "{{ config_message }}"
+        mode: '0644'
+
+    - name: Print number of CPU cores
+      debug:
+        msg: "CPU Cores: {{ ansible_processor_cores }}"
+
+    - name: Print total memory
+      debug:
+        msg: "Total memory: {{ mem_mb }} MB"
+
+    - name: Install multiple packages
+      package:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ packages }}"
+
+    - name: Show uptime
+      command: uptime
+      register: uptime_output
+
+    - name: Print uptime
+      debug:
+        var: uptime_output.stdout

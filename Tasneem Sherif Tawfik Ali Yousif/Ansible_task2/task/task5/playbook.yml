@@ -1,0 +1,18 @@
+- name: Copy 
+  hosts: nginx_servers
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Copy test file
+      copy:
+        src: test_file.txt
+        dest: /tmp/test_file.txt
+      notify: update file
+
+  handlers:
+    - name: update file
+      lineinfile:
+        path: /etc/motd
+        line: "test file updated at {{ ansible_date_time.iso8601 }}"
+        create: yes

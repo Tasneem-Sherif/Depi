@@ -1,0 +1,12 @@
+- name: Run all roles
+  hosts: nginx_servers
+  become: true
+  vars:
+    package_name: nginx
+    dir_name: my_dir
+    file_name: test_file.txt
+
+  roles:
+    - roles/install_nginx
+    - roles/create_user
+    - roles/create_dir

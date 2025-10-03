@@ -1,0 +1,10 @@
+- name: Show encrypted credentials
+  hosts: nginx_servers
+  become: true
+  vars_files:
+    - playbook.yml
+
+  tasks:
+    - name: Print credentials
+      debug:
+        var: login
